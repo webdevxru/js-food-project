@@ -36,7 +36,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const deadline = "2028-09-25"; //отправная точка
 
   function getTimeRemaining(endtime) {
-    const t = Date.parse(endtime) - Date.parse(new Date()), 
+    const t = Date.parse(endtime) - Date.parse(new Date()),
       days = Math.floor(t / (1000 * 60 * 60 * 24)),
       hours = Math.floor(((t / 1000) * 60 * 60) % 24),
       minutes = Math.floor((t / 1000 / 60) % 60),
@@ -57,7 +57,7 @@ window.addEventListener("DOMContentLoaded", () => {
       hours = timer.querySelector("#hours"),
       minutes = timer.querySelector("#minutes"),
       seconds = timer.querySelector("#seconds"),
-    timeInterval = setInterval(updateLock, 1000);
+      timeInterval = setInterval(updateLock, 1000);
 
     updateLock();
 
@@ -77,3 +77,35 @@ window.addEventListener("DOMContentLoaded", () => {
 
   setClock(".timer", deadline);
 });
+//modal
+
+const modalTrigger = document.querySelectorAll("[data-modal]"),
+  modal = document.querySelector(".modal"),
+  modalCloseBtn = document.querySelector("[data-close]");
+
+modalTrigger.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    modal.classList.toggle("show");
+    document.body.style.overflow = "hidden";
+  });
+});
+function closeModal() {
+    modal.classList.toggle("show");
+    //восстановление скролла при закрытия окна
+    document.body.style.overflow = "";
+}
+modalCloseBtn.addEventListener("click", closeModal);
+
+
+
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    closeModal();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if(e.code === "Escape" && modal.classList.contains('show')) {
+    closeModal();
+  }
+})
