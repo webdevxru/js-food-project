@@ -1,3 +1,4 @@
+'use strict';
 window.addEventListener("DOMContentLoaded", () => {
   //tabs
   let tabs = document.querySelectorAll(".tabheader__item");
@@ -83,20 +84,22 @@ const modalTrigger = document.querySelectorAll("[data-modal]"),
   modal = document.querySelector(".modal"),
   modalCloseBtn = document.querySelector("[data-close]");
 
+function openModal() {
+  modal.classList.toggle("show");
+  document.body.style.overflow = "hidden";
+  //если пользоваель сам открыл окно, не показывать его через заданное время
+  // clearInterval(modalTimerId);
+}
 modalTrigger.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    modal.classList.toggle("show");
-    document.body.style.overflow = "hidden";
-  });
+  btn.addEventListener("click", openModal);
 });
+
 function closeModal() {
-    modal.classList.toggle("show");
-    //восстановление скролла при закрытия окна
-    document.body.style.overflow = "";
+  modal.classList.toggle("show");
+  //восстановление скролла при закрытия окна
+  document.body.style.overflow = "auto";
 }
 modalCloseBtn.addEventListener("click", closeModal);
-
-
 
 modal.addEventListener("click", (e) => {
   if (e.target === modal) {
@@ -104,8 +107,77 @@ modal.addEventListener("click", (e) => {
   }
 });
 
-document.addEventListener('keydown', (e) => {
-  if(e.code === "Escape" && modal.classList.contains('show')) {
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Escape" && modal.classList.contains("show")) {
     closeModal();
   }
-})
+
+  const modalTimerId = setTimeout(openModal, 3000);
+
+  function showModalByScroll() {
+    if (
+      window.pageYOffset + document.documentElement.clientHeight >=
+      document.documentElement.scrollHeight
+    ) {
+      openModal();
+      window.removeEventListener("scroll", showModalByScroll);
+    }
+  }
+
+  // window.addEventListener("scroll", showModalByScroll);
+
+  //Class for card
+  class MenuCard {
+    constructor(src, alt, title, descr, price, parentSelector) {
+      this.src = src;
+      this.alt = alt;
+      this.title = title;
+      this.descr = descr;
+      this.price = price;
+      this.parent = document.querySelector(parentSelector);
+      this.transfer = 27;
+      this.changeToUAH();
+    }
+    changeToUAH() {
+      this.price = this.price * this.transfer;
+    }
+
+    render() {
+      const element = document.createElement('div');
+      element.innerHTML = `
+    <div class="menu__item">
+    <img src="${this.src}" alt="${this.alt}">
+    <h3 class="menu__item-subtitle">${this.title}</h3>
+    <div class="menu__item-descr">${this.descr}</div>
+    <div class="menu__item-divider"></div>
+    <div class="menu__item-price">
+        <div class="menu__item-cost">Цена:</div>
+        <div class="menu__item-total"><span>${this.price}</span>/день</div>
+      </div>
+    </div>`;
+
+    this.parent.append(element);
+    }
+  }
+const div = new MenuCard(
+  "img/tabs/vegy.jpg",
+  "vegy",
+  'Меню "Фитнес2"',
+  'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+  9,
+  '.menu__l');
+div.render();
+
+
+
+  new MenuCard(
+    "img/tabs/vegy.jpg",
+    "vegy",
+    'Меню "Фитнес2"',
+    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+    9,
+    '.menu .container'
+  ).render();
+
+  //end content loaded 
+});
